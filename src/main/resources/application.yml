@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: ridesharing-backend
+
+  profiles:
+    dev
+
+  datasource:
+    url: jdbc:postgresal://localhosr5432/rideshare_db
+    username: postgres
+    password: fw18_0433
+    driver-class-name: org.postgresql.Driver
+
+  jps:
+    hibername:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+server:
+  port: 8080
