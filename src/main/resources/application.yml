@@ -3,22 +3,22 @@ spring:
     name: ridesharing-backend
 
   profiles:
-    dev
+    active: dev
 
   datasource:
-    url: jdbc:postgresal://localhosr5432/rideshare_db
-    username: postgres
-    password: fw18_0433
+    url: jdbc:postgresql://localhost:5432/rideshare_db
+    username: postgres         # your pgAdmin username
+    password: fw18_0433     # your pgAdmin password
     driver-class-name: org.postgresql.Driver
 
-  jps:
-    hibername:
-      ddl-auto: update
-    show-sql: true
+  jpa:
+    hibernate:
+      ddl-auto: update   # CREATE tables if not exist, ALTER if schema changed
+    show-sql: true           # prints every SQL query to console — great for learning
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+        format_sql: true     # formats the SQL to be readable in console
 
 server:
-  port: 8080
+  port: 8081
