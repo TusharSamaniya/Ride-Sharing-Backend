@@ -55,14 +55,14 @@ public class AuthService {
         // 2. passwordEncoder.matches(rawPassword, storedHashedPassword)
         // If either fails it throws BadCredentialsException → 401
 		return AuthResponse.builder()
-				.accessToken(jwtUtil.generateToken(userDetails))
-				.refreshToken(jwtUtil.generateRefreshToken(userDetails))
-				.tokenType("Bearer")
-				.userId(user.getId())
-				.email(user.getEmail())
-				.firstName(user.getFirstName())
-				.role(user.getRole().name())
-				.build();
+		        .accessToken(jwtUtil.generateToken(userDetails))
+		        .refreshToken(jwtUtil.generateRefreshToken(userDetails))
+		        .tokenType("Bearer")           // ← add this line, it was missing
+		        .userId(user.getId())
+		        .email(user.getEmail())        // ← add this line, it was missing
+		        .firstName(user.getFirstName())
+		        .role(user.getRole().name())
+		        .build();
 		
 	}
 	
