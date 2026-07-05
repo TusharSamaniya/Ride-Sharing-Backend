@@ -8,6 +8,8 @@ import com.rideshare.dto.driver.RegisterDriverRequest;
 import com.rideshare.entity.Driver;
 import com.rideshare.entity.User;
 import com.rideshare.entity.Vehicle;
+import com.rideshare.repository.DriverRepository;
+import com.rideshare.repository.VehicleRepository;
 import com.rideshare.util.AuthUtil;
 
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,7 @@
 package com.rideshare.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,7 @@ public class UserController {
 		return ResponseEntity.ok(userService.updateMyProfile(request));
 	}
 	
+	@DeleteMapping("/me")
 	public ResponseEntity<String> deactivateAccount(){
 		return ResponseEntity.ok(userService.deactivateMyAccount());
 	}
