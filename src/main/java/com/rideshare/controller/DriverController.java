@@ -12,7 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.rideshare.dto.driver.DriverProfileDto;
 import com.rideshare.dto.driver.RegisterDriverRequest;
+import com.rideshare.entity.Driver;
+import com.rideshare.entity.User;
+import com.rideshare.repository.DriverRepository;
 import com.rideshare.service.DriverService;
+import com.rideshare.service.LocationService;
+import com.rideshare.util.AuthUtil;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +29,15 @@ public class DriverController {
 	
 	@Autowired
 	private DriverService driverService;
+	
+	@Autowired
+	private LocationService locationService;
+	
+	@Autowired
+	private AuthUtil authUtil;
+	
+	@Autowired
+	private DriverRepository driverRepository;
 	
 	@PostMapping("/register")
     public ResponseEntity<DriverProfileDto> registerAsDriver(
@@ -43,5 +57,26 @@ public class DriverController {
             @RequestParam boolean available) {
         return ResponseEntity.ok(driverService.updateAvailability(available));
     }
+    
+    @PutMapping("/location")
+    public ResponseEntity<String> updateLocation(
+            @RequestParam double latitude,
+            @RequestParam double longitude) {
 
+        // Get the current logged-in driver
+        User currentUser = authUtil.getCurrentUser();
+        Driver driver = driverRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        // Save to Redis (fast, real-time)
+        locationService.updateDriverLocation(
+                driver.getId(), latitude, longitude);
+
+        // Also save to PostgreSQL (permanent record)
+        driver.setCurrentLatitude(latitude);
+        driver.setCurrentLongitude(longitude);
+        driverRepository.save(driver);
+        
+        return ResponseEntity.ok("Location.updated");
+    }
 }
