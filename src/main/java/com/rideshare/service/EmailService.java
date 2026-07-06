@@ -213,7 +213,7 @@ public class EmailService {
             helper.setFrom(fromEmail);
             helper.setTo(toEmail);
             helper.setSubject(subject);
-            helper.setText(htmlBody, true); // true = HTML email
+            helper.setText(htmlBody, true); 
 
             mailSender.send(message);
 
