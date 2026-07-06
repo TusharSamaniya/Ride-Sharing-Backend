@@ -46,5 +46,23 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tusharsamaniya02@gmail.com
+    password: jdmv gxgk thrc wzbg 
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        debug: false
+
+  app:
+    name: RideShare
+    support-email: tusharsamaniya02@gmail.com
+
 server:
   port: 8081
