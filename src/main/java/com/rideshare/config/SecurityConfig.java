@@ -27,10 +27,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 	
-	@Autowired
-	private JwtAuthFilter jwtAuthFilter;
-	@Autowired
-    private UserDetailsService userDetailsService;
+	
+	private final JwtAuthFilter jwtAuthFilter;
+	
+    private final UserDetailsService userDetailsService;
 	
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{

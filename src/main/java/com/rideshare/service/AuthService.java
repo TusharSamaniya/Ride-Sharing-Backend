@@ -19,14 +19,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthService {
 	
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-	@Autowired
-	private JwtUtil jwtUtil;
-	@Autowired
-	private AuthenticationManager authenticationManager;
+	
+	private final UserRepository userRepository;
+	
+	private final PasswordEncoder passwordEncoder;
+	
+	private final JwtUtil jwtUtil;
+	
+	private final AuthenticationManager authenticationManager;
 	
 	public AuthResponse register(RegisterRequest request) {
 		if(userRepository.existsByEmail(request.getEmail())) throw new RuntimeException("Email is already registered");

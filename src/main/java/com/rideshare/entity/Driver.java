@@ -28,7 +28,7 @@ public class Driver {
     private String licenseNumber;
 
     @Column(nullable = false)
-    private Boolean isAvailable = false;  // driver toggles this on/off
+    private Boolean isAvailable;  // driver toggles this on/off
 
     @Column(nullable = false)
     private Boolean isVerified = false;   // admin verifies documents

@@ -14,7 +14,7 @@ public class KafkaConfig {
 	}
 	
 	@Bean
-	public NewTopic redeAcceptedtopic() {
+	public NewTopic rediAcceptedtopic() {
 		return TopicBuilder.name("ride.accepted").build();
 	}
 	
