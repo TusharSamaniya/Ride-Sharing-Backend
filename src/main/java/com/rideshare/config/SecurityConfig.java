@@ -38,12 +38,14 @@ public class SecurityConfig {
 		.csrf(AbstractHttpConfigurer::disable)
 		
 		.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/health").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll()
-                .requestMatchers("/swagger-ui/**").permitAll()
-                .anyRequest().authenticated()
-            )
+			    .requestMatchers("/api/auth/**").permitAll()
+			    .requestMatchers("/api/health").permitAll()
+			    .requestMatchers("/api/payments/webhook").permitAll()
+			    .requestMatchers("/v3/api-docs/**").permitAll()   // ← already there
+			    .requestMatchers("/swagger-ui/**").permitAll()    // ← already there
+			    .requestMatchers("/swagger-ui.html").permitAll()  // ← ADD THIS
+			    .anyRequest().authenticated()
+			)
 		
 		.sessionManagement(sess -> sess
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
