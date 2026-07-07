@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+
 import com.rideshare.security.JwtAuthFilter;
 
 import lombok.RequiredArgsConstructor;
@@ -59,10 +60,11 @@ public class SecurityConfig {
 		
 	}
 	
+	
 	@Bean
 	public DaoAuthenticationProvider authenticationProvider() {
-	    DaoAuthenticationProvider authProvider = 
-	            new DaoAuthenticationProvider(userDetailsService);
+		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+		authProvider.setUserDetailsService(userDetailsService);  // ← correct way
 	    authProvider.setPasswordEncoder(passwordEncoder());
 	    return authProvider;
 	}
