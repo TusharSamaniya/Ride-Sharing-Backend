@@ -47,6 +47,13 @@
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 		
+		<!-- Keep only this: -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
+		
 		<!-- Spring Mail — for sending emails -->
 <dependency>
     <groupId>org.springframework.boot</groupId>

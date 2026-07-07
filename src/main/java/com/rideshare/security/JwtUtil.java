@@ -16,13 +16,13 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-	@Value("${spring.security.jwt.secret-key}")
+	@Value("${application.security.jwt.secret-key}")
     private String secretKey;
 
-	@Value("${spring.security.jwt.expiration}")
+	@Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
 
-    @Value("${spring.security.jwt.refresh-token.expiration}")
+	@Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
 
     // Generate access token (no extra claims)

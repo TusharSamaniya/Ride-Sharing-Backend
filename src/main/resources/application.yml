@@ -12,20 +12,13 @@ spring:
     driver-class-name: org.postgresql.Driver
 
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: update
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-
-  security:
-    jwt:
-      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-      expiration: 86400000
-      refresh-token:
-        expiration: 604800000
 
   data:
     redis:
@@ -35,11 +28,9 @@ spring:
 
   kafka:
     bootstrap-servers: localhost:9092
-
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-
     consumer:
       group-id: rideshare-group
       auto-offset-reset: earliest
@@ -50,7 +41,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: tusharsamaniya02@gmail.com
-    password: jdmv gxgk thrc wzbg 
+    password: jdmv gxgk thrc wzbg
     properties:
       mail:
         smtp:
@@ -60,9 +51,19 @@ spring:
             required: true
         debug: false
 
-  app:
-    name: RideShare
-    support-email: tusharsamaniya02@gmail.com
-
 server:
   port: 8081
+
+# ─── These three sections MUST be outside the spring: block ───
+
+application:
+  security:
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000
+      refresh-token:
+        expiration: 604800000
+
+app:
+  name: RideShare
+  support-email: tusharsamaniya02@gmail.com

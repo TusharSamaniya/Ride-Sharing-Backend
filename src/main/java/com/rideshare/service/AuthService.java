@@ -47,7 +47,7 @@ public class AuthService {
 		var userDetails = org.springframework.security.core.userdetails.User
 				.withUsername(user.getEmail())
 				.password(user.getPassword())
-				.authorities("Role_" + user.getRole().name())
+				.authorities("ROLE_" + user.getRole().name())
 				.build();
 		
 		// AuthenticationManager internally calls:
