@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: rideshare-postgres
+    environment:
+      POSTGRES_DB: rideshare_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      # Data persists even after container stops
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - rideshare-network
+
+  # Redis for driver location storage
+  redis:
+    image: redis:7-alpine
+    container_name: rideshare-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - rideshare-network
+
+  # Zookeeper — required by Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: rideshare-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - rideshare-network
+
+  # Kafka for event messaging
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: rideshare-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - rideshare-network
+
+  # Your Spring Boot Application
+  rideshare-app:
+    build: .
+    container_name: rideshare-backend
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    environment:
+      # Override application.yml values for Docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/rideshare_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - rideshare-network
+
+# Named volumes for data persistence
+volumes:
+  postgres_data:
+
+# Network so all containers can talk to each other
+networks:
+  rideshare-network:
+    driver: bridge
