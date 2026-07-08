@@ -1,6 +1,5 @@
 package com.rideshare.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,17 +26,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DriverController {
 	
-	@Autowired
-	private DriverService driverService;
 	
-	@Autowired
-	private LocationService locationService;
+	private final DriverService driverService;
 	
-	@Autowired
-	private AuthUtil authUtil;
 	
-	@Autowired
-	private DriverRepository driverRepository;
+	private final LocationService locationService;
+	
+	
+	private final AuthUtil authUtil;
+	
+	
+	private final DriverRepository driverRepository;
 	
 	@PostMapping("/register")
     public ResponseEntity<DriverProfileDto> registerAsDriver(

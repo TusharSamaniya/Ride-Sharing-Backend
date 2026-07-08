@@ -1,6 +1,5 @@
 package com.rideshare.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.rideshare.dto.driver.DriverProfileDto;
@@ -18,12 +17,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DriverService {
 
-	@Autowired
-    private DriverRepository driverRepository;
-	@Autowired
-    private VehicleRepository vehicleRepository;
-	@Autowired
-    private AuthUtil authUtil;
+	
+    private final DriverRepository driverRepository;
+	
+    private final VehicleRepository vehicleRepository;
+	
+    private final AuthUtil authUtil;
 
     // POST /api/drivers/register
     public DriverProfileDto registerDriver(RegisterDriverRequest request) {

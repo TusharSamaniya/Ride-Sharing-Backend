@@ -1,6 +1,5 @@
 package com.rideshare.kafka;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -16,10 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class RideEventConsumer {
 
-	@Autowired
-    private RideRepository rideRepository;
-	@Autowired
-    private EmailService emailService;
+	
+    private final RideRepository rideRepository;
+	
+    private final EmailService emailService;
 
     // ──────────────────────────────────────────────────────
     // HOW THIS WORKS:

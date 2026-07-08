@@ -1,6 +1,5 @@
 package com.rideshare.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +20,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
 	
-	@Autowired
-	private UserService userService;
+	
+	private final UserService userService;
 	
 	@GetMapping("/me")
 	public ResponseEntity<UserProfileDto> getMyProfile(){

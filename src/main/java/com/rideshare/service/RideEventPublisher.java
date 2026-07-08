@@ -1,6 +1,5 @@
 package com.rideshare.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class RideEventPublisher {
 	
-	@Autowired
-	private KafkaTemplate<String, String> kafkaTemplate;
+	
+	private final KafkaTemplate<String, String> kafkaTemplate;
 	
 	public void publishRideRequested(Long rideId) {
 		String message = "rideId:" + rideId;

@@ -1,6 +1,5 @@
 package com.rideshare.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -86,11 +85,13 @@ public class AuthService {
 		
 		return AuthResponse.builder()
 				.accessToken(jwtUtil.generateToken(userDetails))
-				.refreshToken(jwtUtil.generateRefreshToken(userDetails))
-				.userId(user.getId())
-				.firstName(user.getFirstName())
-                .role(user.getRole().name())
-                .build();
+	            .refreshToken(jwtUtil.generateRefreshToken(userDetails))
+	            .tokenType("Bearer")
+	            .userId(user.getId())
+	            .email(user.getEmail())
+	            .firstName(user.getFirstName())
+	            .role(user.getRole().name())
+	            .build();
 	
 		
 	}

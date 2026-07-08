@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +17,6 @@ import com.rideshare.entity.User;
 import com.rideshare.entity.UserRole;
 import com.rideshare.repository.DriverRepository;
 import com.rideshare.repository.RideRepository;
-import com.rideshare.repository.UserRepository;
 import com.rideshare.util.AuthUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -29,22 +27,21 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class RideService {
 
-	@Autowired
-    private RideRepository rideRepository;
-	@Autowired
-    private DriverRepository driverRepository;
-	@Autowired
-    private UserRepository userRepository;
-	@Autowired
-    private AuthUtil authUtil;
+	
+    private final RideRepository rideRepository;
+	
+    private final DriverRepository driverRepository;
+	
+	
+    private final AuthUtil authUtil;
 
     // NEW — inject the three new services
-	@Autowired
-    private LocationService locationService;
-	@Autowired
-    private RideEventPublisher eventPublisher;
-	@Autowired
-    private WebSocketNotificationService wsNotifier;
+	
+    private final LocationService locationService;
+	
+    private final RideEventPublisher eventPublisher;
+	
+    private final WebSocketNotificationService wsNotifier;
 
     // ─────────────────────────────────────────────────────
     // POST /api/rides/request
