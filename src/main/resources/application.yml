@@ -2,8 +2,5 @@ spring:
   application:
     name: ridesharing-backend
 
-  profiles:
-    active: dev
-
 server:
   port: 8081

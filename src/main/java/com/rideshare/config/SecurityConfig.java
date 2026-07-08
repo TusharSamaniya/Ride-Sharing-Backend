@@ -41,9 +41,10 @@ public class SecurityConfig {
 			    .requestMatchers("/api/auth/**").permitAll()
 			    .requestMatchers("/api/health").permitAll()
 			    .requestMatchers("/api/payments/webhook").permitAll()
-			    .requestMatchers("/v3/api-docs/**").permitAll()   // ← already there
-			    .requestMatchers("/swagger-ui/**").permitAll()    // ← already there
-			    .requestMatchers("/swagger-ui.html").permitAll()  // ← ADD THIS
+			    .requestMatchers("/ws/**").permitAll()          // ← ADD THIS
+			    .requestMatchers("/v3/api-docs/**").permitAll()
+			    .requestMatchers("/swagger-ui/**").permitAll()
+			    .requestMatchers("/swagger-ui.html").permitAll()
 			    .anyRequest().authenticated()
 			)
 		
