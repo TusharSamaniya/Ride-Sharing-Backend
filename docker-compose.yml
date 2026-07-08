@@ -34,6 +34,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
@@ -46,10 +47,11 @@ services:
     networks:
       - rideshare-network
     healthcheck:
-      test: ["CMD", "sh", "-c", "echo ruok | nc localhost 2181 | grep imok"]
+      test: ["CMD-SHELL", "echo ruok | timeout 5 bash -c 'cat > /dev/tcp/localhost/2181'"]
       interval: 10s
-      timeout: 5s
-      retries: 5
+      timeout: 10s
+      retries: 10
+      start_period: 20s
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
@@ -71,11 +73,7 @@ services:
     networks:
       - rideshare-network
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "kafka-topics --bootstrap-server localhost:9092 --list > /dev/null 2>&1"
-        ]
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list > /dev/null 2>&1"]
       interval: 15s
       timeout: 10s
       retries: 10
@@ -97,22 +95,16 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/rideshare_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
-
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
-
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-
       SPRING_PROFILES_ACTIVE: dev
-
       APP_NAME: RideShare
-
       SPRING_MAIL_USERNAME: tusharsamaniya02@gmail.com
       SPRING_MAIL_PASSWORD: "jdmv gxgk thrc wzbg"
-
-      # JWT Secret Key
-      JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-
+      APPLICATION_SECURITY_JWT_SECRET_KEY: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      APPLICATION_SECURITY_JWT_EXPIRATION: 86400000
+      APPLICATION_SECURITY_JWT_REFRESH_TOKEN_EXPIRATION: 604800000
     networks:
       - rideshare-network
 
