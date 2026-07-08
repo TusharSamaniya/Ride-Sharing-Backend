@@ -17,13 +17,13 @@ import java.util.function.Function;
 public class JwtUtil {
 
 	@Value("${application.security.jwt.secret-key}")
-    private String secretKey;
+	private String secretKey;
 
 	@Value("${application.security.jwt.expiration}")
-    private long jwtExpiration;
+	private long jwtExpiration;
 
 	@Value("${application.security.jwt.refresh-token.expiration}")
-    private long refreshExpiration;
+	private long refreshExpiration;
 
     // Generate access token (no extra claims)
     public String generateToken(UserDetails userDetails) {
