@@ -16,7 +16,9 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
             "http://localhost:5173",   // Vite dev server
-            "http://localhost:4173"    // Vite preview
+            "http://localhost:4173",
+            "http://localhost:3000",
+            "http://192.168.1.7:3000"// Vite preview
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));

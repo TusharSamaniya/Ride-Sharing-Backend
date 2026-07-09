@@ -59,4 +59,16 @@ public class RideController {
                     defaultValue = "Cancelled by user") String reason) {
         return ResponseEntity.ok(rideService.cancelRide(id, reason));
     }
+    
+ // Pending rides waiting for a driver to accept (driver dashboard)
+    @GetMapping("/available")
+    public ResponseEntity<List<RideResponseDto>> getAvailableRides() {
+        return ResponseEntity.ok(rideService.getAvailableRides());
+    }
+
+    // Rides assigned to the currently logged-in driver
+    @GetMapping("/driver")
+    public ResponseEntity<List<RideResponseDto>> getDriverRides() {
+        return ResponseEntity.ok(rideService.getDriverRides());
+    }
 }

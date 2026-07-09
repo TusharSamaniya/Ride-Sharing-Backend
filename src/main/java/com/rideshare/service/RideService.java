@@ -55,38 +55,7 @@ public class RideService {
             throw new RuntimeException("Only riders can request rides");
         }
 
-        // Step 1: Find nearby drivers using REDIS GEORADIUS
-        // Search within 10km radius of pickup point
-        List<Long> nearbyDriverIds = locationService.findNearbyDriverIds(
-                request.getPickupLatitude(),
-                request.getPickupLongitude(),
-                10.0  // 10 km radius
-        );
-
-        if (nearbyDriverIds.isEmpty()) {
-            throw new RuntimeException(
-                    "No drivers available nearby. Please try again.");
-        }
-
-        // Step 2: From nearby driver IDs, find one who is
-        // available AND verified in the database
-        Driver assignedDriver = null;
-        for (Long driverId : nearbyDriverIds) {
-            Driver driver = driverRepository.findById(driverId).orElse(null);
-            if (driver != null
-                    && driver.getIsAvailable()
-                    && driver.getIsVerified()) {
-                assignedDriver = driver;
-                break;
-            }
-        }
-
-        if (assignedDriver == null) {
-            throw new RuntimeException(
-                    "No verified drivers available. Please try again.");
-        }
-
-        // Step 3: Calculate estimated fare
+        // Step 1: Calculate estimated fare
         BigDecimal estimatedFare = calculateFare(
                 request.getPickupLatitude(),
                 request.getPickupLongitude(),
@@ -94,37 +63,67 @@ public class RideService {
                 request.getDropoffLongitude()
         );
 
-        // Step 4: Create and save the Ride
+        // Step 2: Create and save the Ride as REQUESTED with NO driver yet.
+        // Drivers will see it in their dashboard and one of them accepts it.
         Ride ride = new Ride();
         ride.setRider(rider);
-        ride.setDriver(assignedDriver);
-        ride.setPickupLatitude(
-                BigDecimal.valueOf(request.getPickupLatitude()));
-        ride.setPickupLongitude(
-                BigDecimal.valueOf(request.getPickupLongitude()));
+        ride.setPickupLatitude(BigDecimal.valueOf(request.getPickupLatitude()));
+        ride.setPickupLongitude(BigDecimal.valueOf(request.getPickupLongitude()));
         ride.setPickupAddress(request.getPickupAddress());
-        ride.setDropoffLatitude(
-                BigDecimal.valueOf(request.getDropoffLatitude()));
-        ride.setDropoffLongitude(
-                BigDecimal.valueOf(request.getDropoffLongitude()));
+        ride.setDropoffLatitude(BigDecimal.valueOf(request.getDropoffLatitude()));
+        ride.setDropoffLongitude(BigDecimal.valueOf(request.getDropoffLongitude()));
         ride.setDropoffAddress(request.getDropoffAddress());
         ride.setStatus(RideStatus.REQUESTED);
         ride.setEstimatedFare(estimatedFare);
 
         Ride savedRide = rideRepository.save(ride);
 
-        // Step 5: Publish event to Kafka
-        // NotificationService will listen and send push/SMS to driver
-        eventPublisher.publishRideRequested(savedRide.getId());
+        // Step 3: Best-effort nearby lookup (never block the booking)
+        try {
+            List<Long> nearbyDriverIds = locationService.findNearbyDriverIds(
+                    request.getPickupLatitude(),
+                    request.getPickupLongitude(),
+                    10.0);
+            log.info("Ride {} broadcast to {} nearby driver(s)",
+                    savedRide.getId(), nearbyDriverIds.size());
+        } catch (Exception e) {
+            log.warn("Could not query nearby drivers from Redis: {}", e.getMessage());
+        }
 
-        // Step 6: Send WebSocket update to rider
-        wsNotifier.sendRideStatusUpdate(
-                savedRide.getId(), "REQUESTED");
+        // Step 4: Kafka (best-effort)
+        try {
+            eventPublisher.publishRideRequested(savedRide.getId());
+        } catch (Exception e) {
+            log.warn("Kafka publish failed for ride {}: {}", savedRide.getId(), e.getMessage());
+        }
 
-        log.info("Ride {} requested by rider {}",
-                savedRide.getId(), rider.getId());
+        // Step 5: WebSocket (best-effort)
+        try {
+            wsNotifier.sendRideStatusUpdate(savedRide.getId(), "REQUESTED");
+        } catch (Exception e) {
+            log.warn("WebSocket notify failed for ride {}: {}", savedRide.getId(), e.getMessage());
+        }
 
+        log.info("Ride {} requested by rider {}", savedRide.getId(), rider.getId());
         return convertToDto(savedRide);
+    }
+
+    // NEW — pending rides any driver can accept
+    public List<RideResponseDto> getAvailableRides() {
+        return rideRepository.findByStatus(RideStatus.REQUESTED).stream()
+                .filter(ride -> ride.getDriver() == null)
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    // NEW — rides assigned to the logged-in driver
+    public List<RideResponseDto> getDriverRides() {
+        User currentUser = authUtil.getCurrentUser();
+        Driver driver = driverRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new RuntimeException("Driver profile not found"));
+        return rideRepository.findByDriverIdOrderByRequestedAtDesc(driver.getId()).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     // ─────────────────────────────────────────────────────

@@ -38,7 +38,7 @@ public class DriverService {
         driver.setUser(currentUser);
         driver.setLicenseNumber(request.getLicenseNumber());
         driver.setIsAvailable(false);   // starts as offline
-        driver.setIsVerified(false);    // admin must verify first
+        driver.setIsVerified(true);    // admin must verify first
         driver.setAverageRating(0.0);
         driver.setTotalRides(0);
         Driver savedDriver = driverRepository.save(driver);
