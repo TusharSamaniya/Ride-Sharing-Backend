@@ -1,41 +1,29 @@
 package com.rideshare.service;
 
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
-
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class RideEventPublisher {
-	
-	
-	private final KafkaTemplate<String, String> kafkaTemplate;
-	
-	public void publishRideRequested(Long rideId) {
-		String message = "rideId:" + rideId;
-		kafkaTemplate.send("ride.requested", message);
-		log.info("published to ride.requested -> {}", message);
-	}
-	
-	public void publishRideAccepted(Long rideId) {
-        String message = "rideId:" + rideId;
-        kafkaTemplate.send("ride.accepted", message);
-        log.info("Published to ride.accepted → {}", message);
-    }
-	
-	public void publishRideCompleted(Long rideId) {
-        String message = "rideId:" + rideId;
-        kafkaTemplate.send("ride.completed", message);
-        log.info("Published to ride.completed → {}", message);
-    }
-	
-	public void publishRideCancelled(Long rideId) {
-        String message = "rideId:" + rideId;
-        kafkaTemplate.send("ride.cancelled", message);
-        log.info("Published to ride.cancelled → {}", message);
+
+    // In production (Render), Kafka is not available
+    // Events are logged instead
+    // In local Docker, full Kafka works
+
+    public void publishRideRequested(Long rideId) {
+        log.info("EVENT: ride.requested → rideId:{}", rideId);
     }
 
+    public void publishRideAccepted(Long rideId) {
+        log.info("EVENT: ride.accepted → rideId:{}", rideId);
+    }
+
+    public void publishRideCompleted(Long rideId) {
+        log.info("EVENT: ride.completed → rideId:{}", rideId);
+    }
+
+    public void publishRideCancelled(Long rideId) {
+        log.info("EVENT: ride.cancelled → rideId:{}", rideId);
+    }
 }

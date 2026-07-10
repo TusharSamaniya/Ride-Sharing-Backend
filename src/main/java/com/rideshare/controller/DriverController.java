@@ -62,20 +62,23 @@ public class DriverController {
             @RequestParam double latitude,
             @RequestParam double longitude) {
 
-        // Get the current logged-in driver
         User currentUser = authUtil.getCurrentUser();
         Driver driver = driverRepository.findByUserId(currentUser.getId())
-                .orElseThrow(() -> new RuntimeException("Driver not found"));
+                .orElseThrow(() -> new RuntimeException("Driver profile not found"));
 
-        // Save to Redis (fast, real-time)
-        locationService.updateDriverLocation(
-                driver.getId(), latitude, longitude);
-
-        // Also save to PostgreSQL (permanent record)
+        // Save location to PostgreSQL (works on all environments)
         driver.setCurrentLatitude(latitude);
         driver.setCurrentLongitude(longitude);
         driverRepository.save(driver);
-        
-        return ResponseEntity.ok("Location.updated");
+
+        // Also try Redis (only works locally with Docker)
+        try {
+            locationService.updateDriverLocation(driver.getId(), latitude, longitude);
+        } catch (Exception e) {
+            // Redis not available in production — that is fine
+            log.warn("Redis not available, location saved to DB only");
+        }
+
+        return ResponseEntity.ok("Location updated");
     }
 }

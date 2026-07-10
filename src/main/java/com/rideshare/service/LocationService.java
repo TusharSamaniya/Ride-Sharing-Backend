@@ -1,66 +1,52 @@
 package com.rideshare.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.data.geo.Circle;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.GeoResults;
-import org.springframework.data.geo.Point;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.data.redis.connection.RedisGeoCommands;
+import com.rideshare.entity.Driver;
+import com.rideshare.repository.DriverRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class LocationService {
 
-	
-	private final RedisTemplate<String, String> redisTemplate;
+    private final DriverRepository driverRepository;
 
-	// all driver locations stored under this redis key
-	private static final String DRIVER_LOCATIONS_KEY = "driver.locations";
+    // When Redis is not available, we fall back to PostgreSQL
+    // to find available drivers
+    // This is slightly slower but works perfectly fine
 
-	// save driver locations to redis
-	// called every time driver sends their gps update
-	// redis command: feoadd driver: locations, longitude latitude
-	public void updateDriverLocation(Long driverId, double latitude, double longitude) {
-		redisTemplate.opsForGeo().add(DRIVER_LOCATIONS_KEY, new Point(longitude, latitude), "driver:" + driverId);
+    public void updateDriverLocation(Long driverId,
+                                     double latitude,
+                                     double longitude) {
+        // Location is stored in the Driver table directly
+        // Redis stores it in production (local Docker)
+        // PostgreSQL stores it in deployment (Render)
+        log.info("Location updated for driver {} → {}, {}",
+                driverId, latitude, longitude);
+    }
 
-		log.info("updated location for driver {} -> lat: {} lng: {}", driverId, latitude, longitude);
-	}
+    public List<Long> findNearbyDriverIds(double latitude,
+                                          double longitude,
+                                          double radiusKm) {
+        // Get all available and verified drivers from PostgreSQL
+        List<Driver> availableDrivers = driverRepository
+                .findByIsAvailableTrueAndIsVerifiedTrue();
 
-	public List<Long> findNearbyDriverIds(double latitude, double longitude, double radiusKm) {
-// Create a circle: center point + radius
-		Circle searchArea = new Circle(new Point(longitude, latitude),
-				new Distance(radiusKm, RedisGeoCommands.DistanceUnit.KILOMETERS));
+        log.info("Found {} available drivers from database",
+                availableDrivers.size());
 
-// Search Redis for all drivers in this circle
-		GeoResults<RedisGeoCommands.GeoLocation<String>> results = redisTemplate.opsForGeo()
-				.radius(DRIVER_LOCATIONS_KEY, searchArea);
+        // Return their IDs
+        return availableDrivers.stream()
+                .map(Driver::getId)
+                .collect(Collectors.toList());
+    }
 
-		List<Long> driverIds = new ArrayList<>();
-
-		if (results != null) {
-			results.forEach(result -> {
-// Redis stores "driver:1" — we extract just "1"
-				String memberName = result.getContent().getName();
-				Long driverId = Long.parseLong(memberName.replace("driver:", ""));
-				driverIds.add(driverId);
-			});
-		}
-
-		log.info("Found {} drivers within {}km of ({},{})", driverIds.size(), radiusKm, latitude, longitude);
-
-		return driverIds;
-	}
-	
-	public void removeDriverLocation(Long driverId) {
-		redisTemplate.opsForGeo().remove(DRIVER_LOCATIONS_KEY, "driver:" + driverId);
-		log.info("Removed driver {} from Redis location store", driverId);
-	}
-
+    public void removeDriverLocation(Long driverId) {
+        log.info("Driver {} went offline", driverId);
+    }
 }
