@@ -66,6 +66,7 @@ services:
 
   rideshare-app:
     build: .
+    image: tusharsamaniya/ridesharingbackend-rideshare-app:latest
     container_name: rideshare-backend
     ports:
       - "8081:8081"
