@@ -26,45 +26,44 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-	
-	
+
+
 	private final JwtAuthFilter jwtAuthFilter;
-	
+
     private final UserDetailsService userDetailsService;
-	
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 		http
 		.csrf(AbstractHttpConfigurer::disable)
-		
+
 		.authorizeHttpRequests(auth -> auth
 			    .requestMatchers("/api/auth/**").permitAll()
 			    .requestMatchers("/api/health").permitAll()
 			    .requestMatchers("/api/payments/webhook").permitAll()
-			    .requestMatchers("/ws/**").permitAll()          // ← ADD THIS
-			    .requestMatchers("/v3/api-docs/**").permitAll()
-			    .requestMatchers("/swagger-ui/**").permitAll()
-			    .requestMatchers("/swagger-ui.html").permitAll()
+			    .requestMatchers("/ws/**").permitAll()
+			    .requestMatchers("/v3/api-docs", "/v3/api-docs/**").permitAll()
+			    .requestMatchers("/swagger-ui.html", "/swagger-ui/**").permitAll()
 			    .anyRequest().authenticated()
 			)
-		
+
 		.sessionManagement(sess -> sess
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-		
+
 		.authenticationProvider(authenticationProvider())
-		
+
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
-		
+
 	}
-	
-	
+
+
 	@Bean
 	public DaoAuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-		authProvider.setUserDetailsService(userDetailsService);  // ← correct way
+		authProvider.setUserDetailsService(userDetailsService);
 	    authProvider.setPasswordEncoder(passwordEncoder());
 	    return authProvider;
 	}

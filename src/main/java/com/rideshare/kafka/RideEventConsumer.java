@@ -1,5 +1,6 @@
 package com.rideshare.kafka;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Profile("!render")
 public class RideEventConsumer {
 
 	
